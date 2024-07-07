@@ -6,7 +6,7 @@ const { authMiddleware } = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
-// Set up multer for file uploads
+ 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, 'uploads/');
@@ -18,7 +18,16 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-// Routes
+ router.post('/upload', upload.single('file'), (req, res) => {
+    const file = req.file;
+    if (!file) {
+        const error = new Error('Please upload a file');
+        error.httpStatusCode = 400;
+        return next(error);
+        }
+        res.send(file);
+        });
+        
 router.get('/:id', authMiddleware, getProfile);
 router.put('/:id', authMiddleware, upload.single('profilePicture'), updateProfile);
 
